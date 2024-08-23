@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.example.my_spring_app.MySpringAppApplicationTests" time="5.222" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.example.my_spring_app.MySpringAppApplicationTests" time="4.681" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="PATH" value="C:\Program Files\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Program Files\Bandizip\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Git\cmd;C:\Program Files\nodejs\;C:\mingw64\bin;C:\Program Files\Java\jdk-22\bin;C:\Program Files\Docker\Docker\resources\bin;C:\apache-maven-3.9.9\bin;C:\Users\chany\AppData\Local\Programs\Python\Python312\Scripts\;C:\Users\chany\AppData\Local\Programs\Python\Python312\;C:\Users\chany\AppData\Local\Microsoft\WindowsApps;C:\Users\chany\AppData\Local\Programs\Microsoft VS Code\bin;C:\flutter\bin;C:\Users\chany\.dotnet\tools;C:\Users\chany\AppData\Roaming\npm"/>
     <property name="java.specification.version" value="22"/>
@@ -17,7 +17,7 @@
     <property name="VSCODE_GIT_ASKPASS_NODE" value="C:\Users\chany\AppData\Local\Programs\Microsoft VS Code\Code.exe"/>
     <property name="TERM_PROGRAM_VERSION" value="1.92.2"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-22\bin"/>
-    <property name="sun.java.command" value="C:\Users\chany\AppData\Local\Temp\surefire10871904411852411860\surefirebooter-20240823215252581_3.jar C:\Users\chany\AppData\Local\Temp\surefire10871904411852411860 2024-08-23T21-52-52_301-jvmRun1 surefire-20240823215252581_1tmp surefire_0-20240823215252581_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\chany\AppData\Local\Temp\surefire2258040677281845012\surefirebooter-20240823220707634_3.jar C:\Users\chany\AppData\Local\Temp\surefire2258040677281845012 2024-08-23T22-07-07_539-jvmRun1 surefire-20240823220707634_1tmp surefire_0-20240823220707634_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="PATHEXT" value=".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC"/>
     <property name="java.specification.vendor" value="Oracle Corporation"/>
@@ -32,6 +32,7 @@
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="PROCESSOR_IDENTIFIER" value="Intel64 Family 6 Model 186 Stepping 2, GenuineIntel"/>
     <property name="PUBLIC" value="C:\Users\Public"/>
+    <property name="=EXITCODE" value="C000013A"/>
     <property name="ZES_ENABLE_SYSMAN" value="1"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
@@ -50,7 +51,7 @@
     <property name="TERM_PROGRAM" value="vscode"/>
     <property name="COMPUTERNAME" value="민찬SGALAXYBOOK"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="PID" value="22988"/>
+    <property name="PID" value="23008"/>
     <property name="MAVEN_PROJECTBASEDIR" value="C:\Users\chany\OneDrive\Mathmatics\Programming\project\my-spring-app"/>
     <property name="sun.os.patch.level" value=""/>
     <property name="CONSOLE_LOG_CHARSET" value="UTF-8"/>
@@ -98,7 +99,7 @@
     <property name="ORIGINAL_XDG_CURRENT_DESKTOP" value="undefined"/>
     <property name="FILE_LOG_CHARSET" value="UTF-8"/>
     <property name="java.awt.headless" value="true"/>
-    <property name="surefire.real.class.path" value="C:\Users\chany\AppData\Local\Temp\surefire10871904411852411860\surefirebooter-20240823215252581_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\chany\AppData\Local\Temp\surefire2258040677281845012\surefirebooter-20240823220707634_3.jar"/>
     <property name="IGCCSVC_DB" value="AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAATX+Ob/e+lEK4EyzFbpvLfgQAAAACAAAAAAAQZgAAAAEAACAAAAA5kmhNzZi9SIyLgq0uohPvrX8ylvfF1VrjmfgKNmLuxgAAAAAOgAAAAAIAACAAAABrOqQnV5xg5zPejCkWcwgG0v5QjDIuPhvhIbhBBdq7dmAAAADVJOkH4JbFllOmkG4YZZVJuek2TKCqCxDeFLO9WVwll1aDZfrBb3s3Uc0adPGH7E1tzVvJfR1TGZpAdrXzee9+2ZairFkuOZL33gZtRTTtLow5nRgaWhIvrHSQIkLywjBAAAAAaws6dFaqJPE5eidVwV5mX6KrnAdTbUHVorLSdtmhgajDwP58lRpT8xGFdCD76IOEfhcSLRwKkB3XodKZOB2pWA=="/>
     <property name="LOCALAPPDATA" value="C:\Users\chany\AppData\Local"/>
     <property name="COMMONPROGRAMFILES(X86)" value="C:\Program Files (x86)\Common Files"/>
@@ -133,9 +134,9 @@
     <property name="TMP" value="C:\Users\chany\AppData\Local\Temp"/>
     <property name="java.class.version" value="66.0"/>
   </properties>
-  <testcase name="contextLoads" classname="com.example.my_spring_app.MySpringAppApplicationTests" time="0.389">
-    <system-out><![CDATA[21:52:53.191 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.example.my_spring_app.MySpringAppApplicationTests]: MySpringAppApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-21:52:53.280 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.example.my_spring_app.MySpringAppApplication for test class com.example.my_spring_app.MySpringAppApplicationTests
+  <testcase name="contextLoads" classname="com.example.my_spring_app.MySpringAppApplicationTests" time="0.372">
+    <system-out><![CDATA[22:07:08.240 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.example.my_spring_app.MySpringAppApplicationTests]: MySpringAppApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+22:07:08.308 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.example.my_spring_app.MySpringAppApplication for test class com.example.my_spring_app.MySpringAppApplicationTests
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -146,22 +147,22 @@
 
  :: Spring Boot ::                (v3.3.3)
 
-2024-08-23T21:52:53.739+09:00  INFO 22988 --- [my-spring-app] [           main] c.e.m.MySpringAppApplicationTests        : Starting MySpringAppApplicationTests using Java 22.0.2 with PID 22988 (started by chany in C:\Users\chany\OneDrive\Mathmatics\Programming\project\my-spring-app)
-2024-08-23T21:52:53.741+09:00  INFO 22988 --- [my-spring-app] [           main] c.e.m.MySpringAppApplicationTests        : No active profile set, falling back to 1 default profile: "default"
-2024-08-23T21:52:54.523+09:00  INFO 22988 --- [my-spring-app] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2024-08-23T21:52:54.584+09:00  INFO 22988 --- [my-spring-app] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 52 ms. Found 3 JPA repository interfaces.
-2024-08-23T21:52:55.119+09:00  INFO 22988 --- [my-spring-app] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2024-08-23T21:52:55.189+09:00  INFO 22988 --- [my-spring-app] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
-2024-08-23T21:52:55.215+09:00  INFO 22988 --- [my-spring-app] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2024-08-23T21:52:55.506+09:00  INFO 22988 --- [my-spring-app] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2024-08-23T21:52:55.539+09:00  INFO 22988 --- [my-spring-app] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2024-08-23T21:52:55.945+09:00  INFO 22988 --- [my-spring-app] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@58e02359
-2024-08-23T21:52:55.946+09:00  INFO 22988 --- [my-spring-app] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2024-08-23T21:52:55.988+09:00  WARN 22988 --- [my-spring-app] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2024-08-23T21:52:56.776+09:00  INFO 22988 --- [my-spring-app] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2024-08-23T21:52:56.778+09:00  INFO 22988 --- [my-spring-app] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2024-08-23T21:52:57.336+09:00  WARN 22988 --- [my-spring-app] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2024-08-23T21:52:57.874+09:00  INFO 22988 --- [my-spring-app] [           main] c.e.m.MySpringAppApplicationTests        : Started MySpringAppApplicationTests in 4.474 seconds (process running for 5.204)
+2024-08-23T22:07:08.689+09:00  INFO 23008 --- [my-spring-app] [           main] c.e.m.MySpringAppApplicationTests        : Starting MySpringAppApplicationTests using Java 22.0.2 with PID 23008 (started by chany in C:\Users\chany\OneDrive\Mathmatics\Programming\project\my-spring-app)
+2024-08-23T22:07:08.691+09:00  INFO 23008 --- [my-spring-app] [           main] c.e.m.MySpringAppApplicationTests        : No active profile set, falling back to 1 default profile: "default"
+2024-08-23T22:07:09.363+09:00  INFO 23008 --- [my-spring-app] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-08-23T22:07:09.417+09:00  INFO 23008 --- [my-spring-app] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 47 ms. Found 3 JPA repository interfaces.
+2024-08-23T22:07:09.910+09:00  INFO 23008 --- [my-spring-app] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-08-23T22:07:09.971+09:00  INFO 23008 --- [my-spring-app] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-08-23T22:07:10.005+09:00  INFO 23008 --- [my-spring-app] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-08-23T22:07:10.280+09:00  INFO 23008 --- [my-spring-app] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-08-23T22:07:10.305+09:00  INFO 23008 --- [my-spring-app] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-08-23T22:07:10.724+09:00  INFO 23008 --- [my-spring-app] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@26463a6
+2024-08-23T22:07:10.725+09:00  INFO 23008 --- [my-spring-app] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-08-23T22:07:10.763+09:00  WARN 23008 --- [my-spring-app] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-08-23T22:07:11.505+09:00  INFO 23008 --- [my-spring-app] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-08-23T22:07:11.507+09:00  INFO 23008 --- [my-spring-app] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-08-23T22:07:11.978+09:00  WARN 23008 --- [my-spring-app] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-08-23T22:07:12.417+09:00  INFO 23008 --- [my-spring-app] [           main] c.e.m.MySpringAppApplicationTests        : Started MySpringAppApplicationTests in 4.013 seconds (process running for 4.68)
 ]]></system-out>
     <system-err><![CDATA[WARNING: A Java agent has been loaded dynamically (C:\Users\chany\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.19\byte-buddy-agent-1.14.19.jar)
 WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
