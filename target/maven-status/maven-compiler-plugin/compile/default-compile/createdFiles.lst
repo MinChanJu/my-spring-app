@@ -7,7 +7,6 @@ com\example\my_spring_app\controller\UserController.class
 com\example\my_spring_app\repository\ProblemRepository.class
 com\example\my_spring_app\service\ContestService.class
 com\example\my_spring_app\model\User.class
-com\example\my_spring_app\DotenvConfig.class
 com\example\my_spring_app\controller\ContestController.class
 com\example\my_spring_app\repository\ContestRepository.class
 com\example\my_spring_app\model\Contest.class
