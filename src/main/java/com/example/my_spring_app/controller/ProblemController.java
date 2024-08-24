@@ -15,27 +15,27 @@ public class ProblemController {
     @Autowired
     private ProblemService problemService;
 
-    @GetMapping
+    @PostMapping
     public List<Problem> getAllProblems() {
         return problemService.getAllProblems();
     }
 
-    @GetMapping("/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<Problem> getProblemById(@PathVariable Long id) {
         return problemService.getProblemById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/contest/{contestId}")
+    @PostMapping("/contest/{contestId}")
     public List<Problem> getProblemsByContestId(@PathVariable Integer contestId) {
         return problemService.getProblemsByContestId(contestId);
     }
 
-    @PostMapping
-    public Problem createProblem(@RequestBody Problem problem) {
-        return problemService.createProblem(problem);
-    }
+    // @PostMapping
+    // public Problem createProblem(@RequestBody Problem problem) {
+    //     return problemService.createProblem(problem);
+    // }
 
     @PutMapping("/{id}")
     public ResponseEntity<Problem> updateProblem(@PathVariable Long id, @RequestBody Problem problemDetails) {

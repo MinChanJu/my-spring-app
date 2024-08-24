@@ -15,22 +15,22 @@ public class ContestController {
     @Autowired
     private ContestService contestService;
 
-    @GetMapping
+    @PostMapping
     public List<Contest> getAllContests() {
         return contestService.getAllContests();
     }
 
-    @GetMapping("/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<Contest> getContestById(@PathVariable Long id) {
         return contestService.getContestById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public Contest createContest(@RequestBody Contest contest) {
-        return contestService.createContest(contest);
-    }
+    // @PostMapping
+    // public Contest createContest(@RequestBody Contest contest) {
+    //     return contestService.createContest(contest);
+    // }
 
     @PutMapping("/{id}")
     public ResponseEntity<Contest> updateContest(@PathVariable Long id, @RequestBody Contest contestDetails) {

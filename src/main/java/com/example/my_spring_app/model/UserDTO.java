@@ -7,9 +7,11 @@ public class UserDTO {
     private Integer authority;
     private String email;
 
+    // 기본 생성자 (필수는 아니지만, 필요할 수 있음)
     public UserDTO() {
     }
 
+    // 모든 필드를 매개변수로 받는 생성자
     public UserDTO(Long id, String name, String userId, Integer authority, String email) {
         this.id = id;
         this.name = name;
@@ -18,6 +20,7 @@ public class UserDTO {
         this.email = email;
     }
 
+    // 게터와 세터 (Getter and Setter)
     public Long getId() {
         return id;
     }
