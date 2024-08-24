@@ -1,12 +1,14 @@
 package com.example.my_spring_app.service;
 
 import com.example.my_spring_app.model.User;
+import com.example.my_spring_app.model.UserDTO;
 import com.example.my_spring_app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -14,8 +16,11 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDTO> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                    .map(user -> new UserDTO(user.getId(), user.getName(), user.getUserId(), user.getAuthority(), user.getEmail()))
+                    .collect(Collectors.toList());
     }
 
     public Optional<User> getUserById(Long id) {

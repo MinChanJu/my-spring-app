@@ -1,6 +1,7 @@
 package com.example.my_spring_app.controller;
 
 import com.example.my_spring_app.model.User;
+import com.example.my_spring_app.model.UserDTO;
 import com.example.my_spring_app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
