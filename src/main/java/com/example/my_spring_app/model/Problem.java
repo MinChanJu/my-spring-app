@@ -11,6 +11,9 @@ public class Problem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "contest_id", nullable = true)
+    private Integer contestId;
+
     @Column(name = "contest_name", length = 100, nullable = false)
     private String contestName;
 
