@@ -12,7 +12,7 @@ public class Problem {
     private Long id;
 
     @Column(name = "contest_id", nullable = false)
-    private Long contestId;
+    private Integer contestId;
 
     @Column(name = "contest_name", length = 100, nullable = false)
     private String contestName;
@@ -49,6 +49,14 @@ public class Problem {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getContestId() {
+        return contestId;
+    }
+
+    public void setContestId(Integer contestId) {
+        this.contestId = contestId;
     }
 
     public String getContestName() {
