@@ -27,11 +27,6 @@ public class ProblemController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/contest/{contestId}")
-    public List<Problem> getProblemsByContestId(@PathVariable Integer contestId) {
-        return problemService.getProblemsByContestId(contestId);
-    }
-
     // @PostMapping
     // public Problem createProblem(@RequestBody Problem problem) {
     //     return problemService.createProblem(problem);

@@ -22,10 +22,6 @@ public class ProblemService {
         return problemRepository.findById(id);
     }
 
-    public List<Problem> getProblemsByContestId(Integer contestId) {
-        return problemRepository.findByContestId(contestId);
-    }
-
     public Problem createProblem(Problem problem) {
         return problemRepository.save(problem);
     }
