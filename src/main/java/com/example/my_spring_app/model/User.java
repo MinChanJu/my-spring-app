@@ -4,33 +4,40 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users", schema = "public")
+@Table(name = "users", schema = "public", uniqueConstraints = {
+    @UniqueConstraint(columnNames = "user_id")
+})
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100)
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(length = 100)
-    private String phone;
-
-    @Column(name = "user_id", length = 255, nullable = false, unique = true)
+    @Column(name = "user_id", nullable = false, length = 255, unique = true)
     private String userId;
 
-    @Column(name = "user_pw", length = 255, nullable = false)
+    @Column(name = "user_pw", nullable = false, length = 255)
     private String userPw;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "phone", nullable = false, length = 100)
+    private String phone;
 
-    @Column
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Column(name = "authority", nullable = false)
     private Integer authority;
 
-    @Column
-    private String email;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     // Getters and Setters
 
@@ -50,14 +57,6 @@ public class User {
         this.name = name;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
     public String getUserId() {
         return userId;
     }
@@ -74,12 +73,20 @@ public class User {
         this.userPw = userPw;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Integer getAuthority() {
@@ -90,11 +97,11 @@ public class User {
         this.authority = authority;
     }
 
-    public String getEmail() {
-        return email;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

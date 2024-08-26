@@ -4,27 +4,34 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "contests", schema = "public")
+@Table(name = "contests", schema = "public", uniqueConstraints = {
+    @UniqueConstraint(columnNames = "contest_name")
+})
 public class Contest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "contest_name", length = 100, nullable = false, unique = true)
-    private String contestName;
-
-    @Column(name = "contest_description", length = 100, nullable = true)
-    private String contestDescription;
-
-    @Column(name = "user_id", length = 255, nullable = false)
+    @Column(name = "user_id", nullable = false, length = 255)
     private String userId;
 
-    @Column(name = "contest_pw", length = 255, nullable = true)
+    @Column(name = "contest_name", nullable = false, length = 100, unique = true)
+    private String contestName;
+
+    @Column(name = "contest_description", length = 100)
+    private String contestDescription;
+
+    @Column(name = "contest_pw", length = 255)
     private String contestPw;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     // Getters and Setters
 
@@ -34,6 +41,14 @@ public class Contest {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getContestName() {
@@ -52,14 +67,6 @@ public class Contest {
         this.contestDescription = contestDescription;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
     public String getContestPw() {
         return contestPw;
     }
@@ -71,7 +78,7 @@ public class Contest {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-    
+
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
