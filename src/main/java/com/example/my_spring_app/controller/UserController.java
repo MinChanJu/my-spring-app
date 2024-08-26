@@ -28,10 +28,20 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // @PostMapping
-    // public User createUser(@RequestBody User user) {
-    //     return userService.createUser(user);
-    // }
+    @PostMapping("/{userId}/{userPw}")
+    public User getUserByUserId(@PathVariable String userId, @PathVariable String userPw) {
+        User user = userService.getUserByUserId(userId);
+        if (user.getUserPw().equals(userPw)) {
+            return user;
+        } else {
+            return null;
+        }
+    }
+
+    @PostMapping("/create")
+    public User createUser(@RequestBody User user) {
+        return userService.createUser(user);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {

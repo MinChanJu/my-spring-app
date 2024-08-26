@@ -27,6 +27,11 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    public User getUserByUserId(String userId) {
+        Optional<User> user = userRepository.findByUserId(userId);
+        return user.orElse(null);
+    }
+
     public User createUser(User user) {
         return userRepository.save(user);
     }
