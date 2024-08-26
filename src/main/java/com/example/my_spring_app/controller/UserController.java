@@ -31,7 +31,9 @@ public class UserController {
     @PostMapping("/{userId}/{userPw}")
     public User getUserByUserId(@PathVariable String userId, @PathVariable String userPw) {
         User user = userService.getUserByUserId(userId);
-        if (user.getUserPw().equals(userPw)) {
+        if (user == null) {
+            return null;
+        } else if (user.getUserPw().equals(userPw)) {
             return user;
         } else {
             return null;
