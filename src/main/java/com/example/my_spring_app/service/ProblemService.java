@@ -1,6 +1,8 @@
 package com.example.my_spring_app.service;
 
+import com.example.my_spring_app.model.Example;
 import com.example.my_spring_app.model.Problem;
+import com.example.my_spring_app.repository.ExampleRepository;
 import com.example.my_spring_app.repository.ProblemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,10 @@ public class ProblemService {
     
     @Autowired
     private ProblemRepository problemRepository;
+    @Autowired
+    private ExampleRepository exampleRepository;
+    @Autowired
+    private ExampleService exampleService;
 
     public List<Problem> getAllProblems() {
         return problemRepository.findAll();
@@ -41,5 +47,9 @@ public class ProblemService {
     public void deleteProblem(Long id) {
         Problem problem = problemRepository.findById(id).orElseThrow(() -> new RuntimeException("Problem not found"));
         problemRepository.delete(problem);
+        List<Example> examples = exampleRepository.findByProblemId(id.intValue());
+        for (Example example : examples) {
+            exampleService.deleteExample(example.getId());
+        }
     }
 }

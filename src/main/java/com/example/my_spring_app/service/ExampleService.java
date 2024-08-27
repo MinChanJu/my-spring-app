@@ -30,4 +30,10 @@ public class ExampleService {
         return exampleRepository.save(example);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void deleteExample(Long id) {
+        Example example = exampleRepository.findById(id).orElseThrow(() -> new RuntimeException("Problem not found"));
+        exampleRepository.delete(example);
+    }
+
 }
