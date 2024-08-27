@@ -7,6 +7,8 @@ import com.example.my_spring_app.service.ExampleService;
 import com.example.my_spring_app.service.ProblemService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +24,7 @@ public class CodeController {
     private ProblemService problemService;
 
     @PostMapping
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public String submitCode(@RequestBody CodeDTO codeDTO) {
         String code = codeDTO.getCode();
         String lang = codeDTO.getLang();

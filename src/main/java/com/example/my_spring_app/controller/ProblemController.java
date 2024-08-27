@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -25,11 +26,13 @@ public class ProblemController {
     private ExampleService exampleService;
 
     @PostMapping
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<Problem> getAllProblems() {
         return problemService.getAllProblems();
     }
 
     @PostMapping("/{id}")
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ResponseEntity<Problem> getProblemById(@PathVariable Long id) {
         return problemService.getProblemById(id)
                 .map(ResponseEntity::ok)
@@ -37,7 +40,7 @@ public class ProblemController {
     }
 
     @PostMapping("/create")
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Problem createProblem(@RequestBody ProblemDTO problemDTO) {
         try {
             // Problem 객체 생성 및 데이터 설정
@@ -73,11 +76,13 @@ public class ProblemController {
     }
 
     @PutMapping("/{id}")
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ResponseEntity<Problem> updateProblem(@PathVariable Long id, @RequestBody Problem problemDetails) {
         return ResponseEntity.ok(problemService.updateProblem(id, problemDetails));
     }
 
     @DeleteMapping("/{id}")
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ResponseEntity<Void> deleteProblem(@PathVariable Long id) {
         problemService.deleteProblem(id);
         return ResponseEntity.noContent().build();

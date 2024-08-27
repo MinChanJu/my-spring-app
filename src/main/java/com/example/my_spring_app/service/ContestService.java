@@ -7,6 +7,8 @@ import com.example.my_spring_app.repository.ProblemRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,18 +23,22 @@ public class ContestService {
     @Autowired
     private ProblemService problemService;
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<Contest> getAllContests() {
         return contestRepository.findAll();
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Optional<Contest> getContestById(Long id) {
         return contestRepository.findById(id);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Contest createContest(Contest contest) {
         return contestRepository.save(contest);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Contest updateContest(Long id, Contest contestDetails) {
         Contest contest = contestRepository.findById(id).orElseThrow(() -> new RuntimeException("Problem not found"));
 
@@ -42,6 +48,7 @@ public class ContestService {
         return contestRepository.save(contest);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteContest(Long id) {
         Contest contest = contestRepository.findById(id).orElseThrow(() -> new RuntimeException("Problem not found"));
         contestRepository.delete(contest);

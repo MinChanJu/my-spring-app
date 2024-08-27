@@ -22,18 +22,22 @@ public class ProblemService {
     @Autowired
     private ExampleService exampleService;
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<Problem> getAllProblems() {
         return problemRepository.findAll();
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Optional<Problem> getProblemById(Long id) {
         return problemRepository.findById(id);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Problem createProblem(Problem problem) {
         return problemRepository.save(problem);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Problem updateProblem(Long id, Problem problemDetails) {
         Problem problem = problemRepository.findById(id).orElseThrow(() -> new RuntimeException("Problem not found"));
 

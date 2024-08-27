@@ -6,6 +6,8 @@ import com.example.my_spring_app.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +44,7 @@ public class UserService {
         return true;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
@@ -49,15 +52,18 @@ public class UserService {
                     .collect(Collectors.toList());
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public User getUserByUserId(String userId) {
         Optional<User> user = userRepository.findByUserId(userId);
         return user.orElse(null);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public User createUser(User user) {
         if (userRepository.existsByUserId(user.getUserId())) {
             return null;
@@ -69,6 +75,7 @@ public class UserService {
         }
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public User updateUser(Long id, User userDetails) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -78,6 +85,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteUser(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         userRepository.delete(user);

@@ -17,10 +17,12 @@ public class ExampleService {
     @Autowired
     private ExampleRepository exampleRepository;
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<Example> getAllExamples() {
         return exampleRepository.findAll();
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<Example> getExamplesByProblemId(Integer problemId) {
         return exampleRepository.findByProblemId(problemId);
     }
