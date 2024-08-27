@@ -1,24 +1,24 @@
 package com.example.my_spring_app.model;
 
 public class ExampleDTO {
-    private String ExampleInput;
-    private String ExampleOutput;
+    private String exampleInput;
+    private String exampleOutput;
 
     // Getters and Setters
 
     public String getExampleInput() {
-        return ExampleInput;
+        return exampleInput;
     }
-
+    
     public void setExampleInput(String exampleInput) {
-        ExampleInput = exampleInput;
+        this.exampleInput = exampleInput;
     }
 
     public String getExampleOutput() {
-        return ExampleOutput;
+        return exampleOutput;
     }
 
     public void setExampleOutput(String exampleOutput) {
-        ExampleOutput = exampleOutput;
+        this.exampleOutput = exampleOutput;
     }
 }
