@@ -7,8 +7,11 @@ import com.example.my_spring_app.model.ProblemDTO;
 import com.example.my_spring_app.service.ExampleService;
 import com.example.my_spring_app.service.ProblemService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -34,29 +37,39 @@ public class ProblemController {
     }
 
     @PostMapping("/create")
+    @Transactional
     public Problem createProblem(@RequestBody ProblemDTO problemDTO) {
-        Problem problem = new Problem();
-        problem.setContestId(problemDTO.getContestId());
-        problem.setContestName(problemDTO.getContestName());
-        problem.setUserId(problemDTO.getUserId());
-        problem.setProblemName(problemDTO.getProblemName());
-        problem.setProblemDescription(problemDTO.getProblemDescription());
-        problem.setProblemInputDescription(problemDTO.getProblemInputDescription());
-        problem.setProblemOutputDescription(problemDTO.getProblemOutputDescription());
-        problem.setProblemExampleInput(problemDTO.getProblemExampleInput());
-        problem.setProblemExampleOutput(problemDTO.getProblemExampleOutput());
+        try {
+            // Problem 객체 생성 및 데이터 설정
+            Problem problem = new Problem();
+            problem.setContestId(problemDTO.getContestId());
+            problem.setContestName(problemDTO.getContestName());
+            problem.setUserId(problemDTO.getUserId());
+            problem.setProblemName(problemDTO.getProblemName());
+            problem.setProblemDescription(problemDTO.getProblemDescription());
+            problem.setProblemInputDescription(problemDTO.getProblemInputDescription());
+            problem.setProblemOutputDescription(problemDTO.getProblemOutputDescription());
+            problem.setProblemExampleInput(problemDTO.getProblemExampleInput());
+            problem.setProblemExampleOutput(problemDTO.getProblemExampleOutput());
 
-        Problem curProblem = problemService.createProblem(problem);
+            // Problem 저장
+            Problem curProblem = problemService.createProblem(problem);
 
-        for (ExampleDTO exampleDTO : problemDTO.getExamples()) {
-            Example example = new Example();
-            example.setExampleInput(exampleDTO.getExampleInput());
-            example.setExampleOutput(exampleDTO.getExampleOutput());
-            example.setProblemId(curProblem.getId().intValue());
-            exampleService.createExample(example);
+            // Example 저장
+            for (ExampleDTO exampleDTO : problemDTO.getExamples()) {
+                Example example = new Example();
+                example.setExampleInput(exampleDTO.getExampleInput());
+                example.setExampleOutput(exampleDTO.getExampleOutput());
+                example.setProblemId(curProblem.getId().intValue());
+                exampleService.createExample(example);
+            }
+
+            return curProblem;
+        } catch (Exception e) {
+            // 예외 발생 시 롤백 및 로그 출력
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred while creating the problem", e);
         }
-
-        return curProblem;
     }
 
     @PutMapping("/{id}")
