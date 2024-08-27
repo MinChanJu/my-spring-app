@@ -21,11 +21,14 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return userService.getUserById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @PostMapping("/{userId}")
+    public UserDTO getUserDTOByUserId(@PathVariable String userId) {
+        User user = userService.getUserByUserId(userId);
+        if (user == null) {
+            return null;
+        } else {
+            return new UserDTO(user.getId(), user.getName(), user.getUserId(), user.getEmail(), user.getAuthority(), user.getCreatedAt());
+        }
     }
 
     @PostMapping("/{userId}/{userPw}")

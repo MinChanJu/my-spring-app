@@ -45,7 +45,7 @@ public class UserService {
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
-                    .map(user -> new UserDTO(user.getId(), user.getName(), user.getUserId(), user.getAuthority(), user.getEmail()))
+                    .map(user -> new UserDTO(user.getId(), user.getName(), user.getUserId(), user.getEmail(), user.getAuthority(), user.getCreatedAt()))
                     .collect(Collectors.toList());
     }
 
