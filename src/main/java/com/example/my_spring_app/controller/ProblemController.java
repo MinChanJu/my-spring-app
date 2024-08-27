@@ -27,10 +27,10 @@ public class ProblemController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // @PostMapping
-    // public Problem createProblem(@RequestBody Problem problem) {
-    //     return problemService.createProblem(problem);
-    // }
+    @PostMapping("/create")
+    public Problem createProblem(@RequestBody Problem problem) {
+        return problemService.createProblem(problem);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Problem> updateProblem(@PathVariable Long id, @RequestBody Problem problemDetails) {

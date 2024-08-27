@@ -27,10 +27,10 @@ public class ContestController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // @PostMapping
-    // public Contest createContest(@RequestBody Contest contest) {
-    //     return contestService.createContest(contest);
-    // }
+    @PostMapping("/create")
+    public Contest createContest(@RequestBody Contest contest) {
+        return contestService.createContest(contest);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Contest> updateContest(@PathVariable Long id, @RequestBody Contest contestDetails) {
