@@ -1,9 +1,12 @@
+com\example\my_spring_app\repository\ExampleRepository.class
 com\example\my_spring_app\service\ProblemService.class
 com\example\my_spring_app\model\Problem.class
 com\example\my_spring_app\repository\UserRepository.class
 com\example\my_spring_app\controller\ProblemController.class
 com\example\my_spring_app\MySpringAppApplication.class
+com\example\my_spring_app\service\ExampleService.class
 com\example\my_spring_app\controller\UserController.class
+com\example\my_spring_app\controller\CodeController.class
 com\example\my_spring_app\repository\ProblemRepository.class
 com\example\my_spring_app\model\UserDTO.class
 com\example\my_spring_app\service\ContestService.class
@@ -12,4 +15,6 @@ com\example\my_spring_app\controller\ContestController.class
 com\example\my_spring_app\repository\ContestRepository.class
 com\example\my_spring_app\model\Contest.class
 com\example\my_spring_app\config\WebConfig.class
+com\example\my_spring_app\model\CodeDTO.class
 com\example\my_spring_app\service\UserService.class
+com\example\my_spring_app\model\Example.class
