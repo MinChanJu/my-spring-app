@@ -22,4 +22,8 @@ public class ExampleService {
         return exampleRepository.findByProblemId(problemId);
     }
 
+    public Example createExample(Example example) {
+        return exampleRepository.save(example);
+    }
+
 }

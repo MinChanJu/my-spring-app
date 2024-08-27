@@ -1,6 +1,10 @@
 package com.example.my_spring_app.controller;
 
+import com.example.my_spring_app.model.Example;
+import com.example.my_spring_app.model.ExampleDTO;
 import com.example.my_spring_app.model.Problem;
+import com.example.my_spring_app.model.ProblemDTO;
+import com.example.my_spring_app.service.ExampleService;
 import com.example.my_spring_app.service.ProblemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +18,8 @@ public class ProblemController {
 
     @Autowired
     private ProblemService problemService;
+    @Autowired
+    private ExampleService exampleService;
 
     @PostMapping
     public List<Problem> getAllProblems() {
@@ -28,8 +34,29 @@ public class ProblemController {
     }
 
     @PostMapping("/create")
-    public Problem createProblem(@RequestBody Problem problem) {
-        return problemService.createProblem(problem);
+    public Problem createProblem(@RequestBody ProblemDTO problemDTO) {
+        Problem problem = new Problem();
+        problem.setContestId(problemDTO.getContestId());
+        problem.setContestName(problemDTO.getContestName());
+        problem.setUserId(problemDTO.getUserId());
+        problem.setProblemName(problemDTO.getProblemName());
+        problem.setProblemDescription(problemDTO.getProblemDescription());
+        problem.setProblemInputDescription(problemDTO.getProblemInputDescription());
+        problem.setProblemOutputDescription(problemDTO.getProblemOutputDescription());
+        problem.setProblemExampleInput(problemDTO.getProblemExampleInput());
+        problem.setProblemExampleOutput(problemDTO.getProblemExampleOutput());
+
+        Problem curProblem = problemService.createProblem(problem);
+
+        for (ExampleDTO exampleDTO : problemDTO.getExamples()) {
+            Example example = new Example();
+            example.setExampleInput(exampleDTO.getExampleInput());
+            example.setExampleOutput(exampleDTO.getExampleOutput());
+            example.setProblemId(curProblem.getId().intValue());
+            exampleService.createExample(example);
+        }
+
+        return curProblem;
     }
 
     @PutMapping("/{id}")
