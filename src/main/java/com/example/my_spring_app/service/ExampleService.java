@@ -3,6 +3,9 @@ package com.example.my_spring_app.service;
 import com.example.my_spring_app.model.Example;
 import com.example.my_spring_app.repository.ExampleRepository;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +25,7 @@ public class ExampleService {
         return exampleRepository.findByProblemId(problemId);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Example createExample(Example example) {
         return exampleRepository.save(example);
     }
