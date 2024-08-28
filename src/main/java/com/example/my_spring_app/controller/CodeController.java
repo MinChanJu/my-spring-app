@@ -95,23 +95,9 @@ public class CodeController {
         String result;
         String[] list = exampleOutput.split("\n");
 
-        // 서브디렉토리 경로 설정
-        String subdirectoryPath = "/app/data"; // 클라우드타입에서 사용할 서브디렉토리
-        File subdirectory = new File(subdirectoryPath);
-
-        // 서브디렉토리가 존재하지 않으면 생성
-        if (!subdirectory.exists()) {
-            boolean created = subdirectory.mkdirs();
-            if (created) {
-                System.out.println("서브디렉토리가 생성되었습니다: " + subdirectoryPath);
-            } else {
-                System.out.println("서브디렉토리 생성에 실패했습니다.");
-                return "서버 에러: 디렉토리 생성 실패";
-            }
-        }
-
-        // Java 파일을 서브디렉토리에 저장
-        File javaFile = new File(subdirectoryPath, "Main.java");
+        // Java 파일 저장
+        String fileName = "Main.java";
+        File javaFile = new File(fileName);
         try (FileWriter fileWriter = new FileWriter(javaFile)) {
             fileWriter.write(code);
         }
@@ -123,14 +109,13 @@ public class CodeController {
 
         if (compile == 0) {
             // 컴파일된 클래스를 실행
-            ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", subdirectoryPath, "Main");
+            ProcessBuilder processBuilder = new ProcessBuilder("java", "Main");
             Process process = processBuilder.start();
 
             // 프로세스에 입력 값 전달
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()))) {
-                writer.write(exampleInput + "\n");
-                writer.flush();
-            }
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
+            writer.write(exampleInput+"\n");
+            writer.flush();
 
             // 프로세스의 출력을 읽어오기
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -161,7 +146,7 @@ public class CodeController {
             }
 
             // 컴파일된 클래스 파일 삭제
-            File classFile = new File(subdirectoryPath + File.separator + "Main.class");
+            File classFile = new File("Main.class");
             if (classFile.exists()) {
                 if (classFile.delete()) {
                     System.out.println("컴파일된 클래스 파일 삭제 성공!");
