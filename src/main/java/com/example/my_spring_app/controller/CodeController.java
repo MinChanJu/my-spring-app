@@ -96,7 +96,7 @@ public class CodeController {
         String[] list = exampleOutput.split("\n");
 
         // 서브디렉토리 경로 설정
-        String subdirectoryPath = "/app/data"; // 클라우드타입에서 사용할 서브디렉토리
+        String subdirectoryPath = "packages/myapp/data"; // 클라우드타입에서 사용할 서브디렉토리
         File subdirectory = new File(subdirectoryPath);
 
         // 서브디렉토리가 존재하지 않으면 생성
