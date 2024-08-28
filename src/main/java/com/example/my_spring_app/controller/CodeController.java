@@ -45,7 +45,7 @@ public class CodeController {
     }
 
     public String runCode(String code, String lang, Problem problem, List<Example> examples) {
-        int total = examples.size()+1;
+        int total = examples.size() + 1;
         int count = 0;
 
         if (lang.equals("Python")) {
@@ -56,7 +56,7 @@ public class CodeController {
             String re = "";
             String result;
             try {
-                result = JavaCompile(code, problem.getProblemExampleInput(),problem.getProblemExampleOutput());
+                result = JavaCompile(code, problem.getProblemExampleInput(), problem.getProblemExampleOutput());
                 re += result;
                 if (result.equals("성공")) {
                     count++;
@@ -65,7 +65,10 @@ public class CodeController {
                 } else if (result.equals("시간초과")) {
                     return "시간초과";
                 }
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                e.printStackTrace(); // 예외 발생 시 스택 트레이스를 출력하여 문제를 진단
+                return "서버 에러: " + e.getMessage();
+            }
             for (Example example : examples) {
                 try {
                     result = JavaCompile(code, example.getExampleInput(), example.getExampleOutput());
@@ -78,21 +81,23 @@ public class CodeController {
                         return "시간초과";
                     }
                 } catch (Exception e) {
-                    continue;
+                    e.printStackTrace(); // 예외 발생 시 스택 트레이스를 출력하여 문제를 진단
+                    return "서버 에러: " + e.getMessage();
                 }
             }
-            return String.format("%.1f", ((double) count / (double) total)*100)+"  "+re;
+            return String.format("%.1f", ((double) count / (double) total) * 100) + "  " + re;
         } else {
             return "제출 오류";
         }
     }
 
-    public String JavaCompile(String code, String exmpleInput, String exampleOutput) throws Exception {
+    public String JavaCompile(String code, String exampleInput, String exampleOutput) throws Exception {
         String result;
         String[] list = exampleOutput.split("\n");
 
         // 문자열 코드를 파일로 저장
-        String fileName = "Main.java";
+        String tempDir = System.getProperty("java.io.tmpdir");
+        String fileName = tempDir + "Main.java";
         File javaFile = new File(fileName);
         try (FileWriter fileWriter = new FileWriter(javaFile)) {
             fileWriter.write(code);
@@ -105,13 +110,14 @@ public class CodeController {
         if (compile == 0) {
 
             // 컴파일된 클래스를 실행
-            ProcessBuilder processBuilder = new ProcessBuilder("java", "Main");
+            ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", tempDir, "Main");
             Process process = processBuilder.start();
 
             // 프로세스에 입력 값 전달
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
-            writer.write(exmpleInput+"\n");
-            writer.flush();
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()))) {
+                writer.write(exampleInput + "\n");
+                writer.flush();
+            }
 
             // 프로세스의 출력을 읽어오기
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -142,7 +148,7 @@ public class CodeController {
             }
 
             // 컴파일된 클래스 파일 삭제
-            File classFile = new File("Main.class");
+            File classFile = new File(tempDir + "Main.class");
             if (classFile.exists()) {
                 if (classFile.delete()) {
                     System.out.println("컴파일된 클래스 파일 삭제 성공!");
