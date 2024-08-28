@@ -78,7 +78,7 @@ public class CodeController {
                     continue;
                 }
             }
-            return String.format("%.1f", ((double) count / (double) total)*100);
+            return String.format("%.1f", ((double) count / (double) total)*100) + problem.getProblemExampleInput() + problem.getProblemExampleOutput();
         } else {
             return "제출 오류";
         }
