@@ -96,21 +96,21 @@ public class CodeController {
         String[] list = exampleOutput.split("\n");
 
         // 문자열 코드를 파일로 저장
-        String tempDir = System.getProperty("java.io.tmpdir");
-        String fileName = tempDir + "Main.java";
-        File javaFile = new File(fileName);
+        File javaFile = new File(System.getProperty("java.io.tmpdir"), "Main.java");
         try (FileWriter fileWriter = new FileWriter(javaFile)) {
             fileWriter.write(code);
         }
 
-        // Java 컴파일러 API를 사용하여 컴파일
+         // Java 컴파일러 API를 사용하여 컴파일
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        int compile = compiler.run(null, null, null, fileName);
+        
+        // 컴파일러 오류 메시지를 출력하기 위한 ByteArrayOutputStream 준비
+        ByteArrayOutputStream errStream = new ByteArrayOutputStream();
+        int compile = compiler.run(null, null, new PrintStream(errStream), javaFile.getPath());
 
         if (compile == 0) {
-
             // 컴파일된 클래스를 실행
-            ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", tempDir, "Main");
+            ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", javaFile.getParent().toString(), "Main");
             Process process = processBuilder.start();
 
             // 프로세스에 입력 값 전달
@@ -148,7 +148,7 @@ public class CodeController {
             }
 
             // 컴파일된 클래스 파일 삭제
-            File classFile = new File(tempDir + "Main.class");
+            File classFile = new File(javaFile.getParent().toString() + File.separator + "Main.class");
             if (classFile.exists()) {
                 if (classFile.delete()) {
                     System.out.println("컴파일된 클래스 파일 삭제 성공!");
@@ -158,7 +158,7 @@ public class CodeController {
             }
 
         } else {
-            result = "컴파일 실패";
+            result = "컴파일 실패: " + errStream.toString();
         }
 
         // 원본 Java 파일 삭제
@@ -170,6 +170,7 @@ public class CodeController {
             }
         }
 
+        System.out.println(result);
         return result;
     }
 }
