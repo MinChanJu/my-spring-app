@@ -7,13 +7,16 @@ com\example\my_spring_app\repository\ProblemRepository.class
 com\example\my_spring_app\model\ProblemDTO.class
 com\example\my_spring_app\model\UserDTO.class
 com\example\my_spring_app\service\ContestService.class
+com\example\my_spring_app\controller\CodeController$InMemoryJavaFileObject.class
 com\example\my_spring_app\model\User.class
+com\example\my_spring_app\controller\CodeController$1.class
 com\example\my_spring_app\controller\ContestController.class
+com\example\my_spring_app\controller\CodeController$InMemoryClassLoader.class
 com\example\my_spring_app\repository\ContestRepository.class
 com\example\my_spring_app\model\Contest.class
 com\example\my_spring_app\config\WebConfig.class
-com\example\my_spring_app\data\Main.class
 com\example\my_spring_app\model\CodeDTO.class
+com\example\my_spring_app\controller\CodeController$1$1.class
 com\example\my_spring_app\model\Example.class
 com\example\my_spring_app\repository\ExampleRepository.class
 com\example\my_spring_app\service\ProblemService.class

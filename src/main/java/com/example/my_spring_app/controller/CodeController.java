@@ -11,17 +11,11 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
+import javax.tools.*;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.concurrent.TimeUnit;
+import java.net.URI;
+import java.util.*;
+import java.lang.reflect.Method;
 
 @RestController
 @RequestMapping("/api/code")
@@ -60,7 +54,7 @@ public class CodeController {
             String re = "";
             String result;
             try {
-                result = JavaCompile(code, problem.getProblemExampleInput(), problem.getProblemExampleOutput());
+                result = javaCompile(code, problem.getProblemExampleInput(), problem.getProblemExampleOutput());
                 re += result;
                 if (result.equals("success")) {
                     count++;
@@ -73,7 +67,7 @@ public class CodeController {
             }
             for (Example example : examples) {
                 try {
-                    result = JavaCompile(code, example.getExampleInput(), example.getExampleOutput());
+                    result = javaCompile(code, example.getExampleInput(), example.getExampleOutput());
                     re += result;
                     if (result.equals("success")) {
                         count++;
@@ -91,74 +85,130 @@ public class CodeController {
         }
     }
 
-    public String JavaCompile(String code, String exampleInput, String exampleOutput) throws Exception {
+    public String javaCompile(String code, String exampleInput, String exampleOutput) throws Exception {
         String result;
         String[] expectedOutput = exampleOutput.split("\n");
-        System.out.println(exampleInput);
-        System.out.println(exampleOutput);
 
-        // data 폴더에 있는 Main.java 파일의 경로를 지정합니다.
-        Path filePath = Paths.get("src/main/java/com/example/my_spring_app/data/Main.java");
-        try {
-            // 파일 내용을 완전히 지우고 새 내용으로 덮어씁니다.
-            Files.write(filePath, ("package com.example.my_spring_app.data;\n\n"+code).getBytes(), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
-            System.out.println("file write success.");
-        } catch (IOException e) {
-            System.out.println("file write fail: " + e.getMessage());
-            return "파일 작성 오류";
-        }
+        // 메모리 내에서 Java 소스 파일을 작성합니다.
+        JavaFileObject javaFile = new InMemoryJavaFileObject("Main", code);
 
         // Java 컴파일러 API를 사용하여 컴파일
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        ByteArrayOutputStream errStream = new ByteArrayOutputStream();
-        int compile = compiler.run(null, null, new PrintStream(errStream), filePath.toString());
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+        StandardJavaFileManager stdFileManager = compiler.getStandardFileManager(diagnostics, null, null);
 
-        if (compile == 0) {
+        // 메모리에서 컴파일된 클래스 파일을 저장할 Map
+        Map<String, ByteArrayOutputStream> classFiles = new HashMap<>();
+
+        // In-memory file manager를 사용하여 컴파일된 결과를 메모리에 저장
+        JavaFileManager fileManager = new ForwardingJavaFileManager<>(stdFileManager) {
+            @Override
+            public JavaFileObject getJavaFileForOutput(Location location, String className, JavaFileObject.Kind kind, FileObject sibling) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                classFiles.put(className, baos);
+                return new SimpleJavaFileObject(URI.create("mem:///" + className.replace('.', '/') + kind.extension), kind) {
+                    @Override
+                    public OutputStream openOutputStream() {
+                        return baos;
+                    }
+                };
+            }
+        };
+
+        // 컴파일 작업을 설정하고 실행
+        JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, Arrays.asList(javaFile));
+        boolean success = task.call();
+
+        if (success) {
             try {
-                // 컴파일된 클래스를 실행
-                ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", "src/main/java", "com.example.my_spring_app.data.Main");
-                Process process = processBuilder.start();
+                // 컴파일된 클래스를 로드하고 실행
+                InMemoryClassLoader classLoader = new InMemoryClassLoader(classFiles);
+                Class<?> cls = classLoader.loadClass("Main");
+                Method mainMethod = cls.getDeclaredMethod("main", String[].class);
 
-                // 프로세스에 입력 값 전달
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
-                writer.write(exampleInput + "\n");
-                writer.flush();
+                // 실행 결과를 캡처하기 위해 PrintStream을 사용
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                PrintStream ps = new PrintStream(outputStream);
+                PrintStream oldOut = System.out;
+                System.setOut(ps);
 
-                // 프로세스의 출력을 읽어오기
-                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                int i = 0;
-                String line;
+                // System.in을 가짜 InputStream으로 설정하여 Scanner 입력 시뮬레이션
+                InputStream oldIn = System.in;
+                InputStream inputStream = new ByteArrayInputStream(exampleInput.getBytes());
+                System.setIn(inputStream);
+
+                // 메인 메서드 실행
+                mainMethod.invoke(null, (Object) new String[]{});
+
+                // 실행 후 원래 System.in 및 System.out 복구
+                System.setOut(oldOut);
+                System.setIn(oldIn);
+
+                // 출력 결과를 비교
+                String output = outputStream.toString().trim();
+                String[] actualOutput = output.split("\n");
+
                 boolean matches = true;
-
-                // 시간 제한 설정 (5초)
-                long timeout = 5;
-                if (!process.waitFor(timeout, TimeUnit.SECONDS)) {
-                    result = "time out";
-                    process.destroy(); // 프로세스 강제 종료
-                } else {
-                    // 정상적으로 종료된 경우에만 결과를 확인
-                    while ((line = reader.readLine()) != null && i < expectedOutput.length) {
-                        if (!line.equals(expectedOutput[i])) {
-                            matches = false;
-                            break;
-                        }
-                        i++;
+                int i = 0;
+                while (i < actualOutput.length && i < expectedOutput.length) {
+                    if (!actualOutput[i].trim().equals(expectedOutput[i].trim())) {
+                        matches = false;
+                        break;
                     }
-
-                    if (matches && i == expectedOutput.length) {
-                        result = "success";
-                    } else {
-                        result = "fail";
-                    }
+                    i++;
                 }
-            } catch (IOException | InterruptedException e) {
+
+                if (matches && i == expectedOutput.length) {
+                    result = "success";
+                } else {
+                    result = "fail";
+                }
+            } catch (Exception e) {
                 result = "process run fail: " + e.getMessage();
             }
-
         } else {
-            result = "compile fail: " + errStream.toString();
+            // 컴파일 오류 수집
+            StringBuilder errorMsg = new StringBuilder();
+            for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+                errorMsg.append(diagnostic.getMessage(null)).append("\n");
+            }
+            result = "compile fail: " + errorMsg.toString();
         }
 
         return result;
+    }
+
+    // 메모리 내에서 Java 소스를 나타내는 클래스
+    static class InMemoryJavaFileObject extends SimpleJavaFileObject {
+        private final String code;
+
+        public InMemoryJavaFileObject(String name, String code) {
+            super(URI.create("string:///" + name.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);
+            this.code = code;
+        }
+
+        @Override
+        public CharSequence getCharContent(boolean ignoreEncodingErrors) {
+            return code;
+        }
+    }
+
+    // 메모리 내에서 컴파일된 클래스를 로드하는 클래스 로더
+    static class InMemoryClassLoader extends ClassLoader {
+        private final Map<String, ByteArrayOutputStream> classFiles;
+
+        public InMemoryClassLoader(Map<String, ByteArrayOutputStream> classFiles) {
+            this.classFiles = classFiles;
+        }
+
+        @Override
+        protected Class<?> findClass(String name) throws ClassNotFoundException {
+            ByteArrayOutputStream baos = classFiles.get(name);
+            if (baos == null) {
+                return super.findClass(name);
+            }
+            byte[] bytes = baos.toByteArray();
+            return defineClass(name, bytes, 0, bytes.length);
+        }
     }
 }
