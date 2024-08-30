@@ -1,7 +1,9 @@
 package com.example.my_spring_app.service;
 
 import com.example.my_spring_app.model.Example;
+import com.example.my_spring_app.model.ExampleDTO;
 import com.example.my_spring_app.model.Problem;
+import com.example.my_spring_app.model.ProblemDTO;
 import com.example.my_spring_app.repository.ExampleRepository;
 import com.example.my_spring_app.repository.ProblemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +40,28 @@ public class ProblemService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Problem updateProblem(Long id, Problem problemDetails) {
+    public Problem updateProblem(Long id, ProblemDTO problemDetails) {
         Problem problem = problemRepository.findById(id).orElseThrow(() -> new RuntimeException("Problem not found"));
 
-        problem.setContestName(problemDetails.getContestName());
         problem.setProblemName(problemDetails.getProblemName());
+        problem.setProblemDescription(problemDetails.getProblemDescription());
+        problem.setProblemInputDescription(problemDetails.getProblemInputDescription());
+        problem.setProblemOutputDescription(problemDetails.getProblemOutputDescription());
+        problem.setProblemExampleInput(problemDetails.getProblemExampleInput());
+        problem.setProblemExampleOutput(problemDetails.getProblemExampleOutput());
+        
+        List<Example> examples = exampleRepository.findByProblemId(id.intValue());
+        for (Example example : examples) {
+            exampleService.deleteExample(example.getId());
+        }
+
+        for (ExampleDTO exampleDTO : problemDetails.getExamples()) {
+            Example example = new Example();
+            example.setExampleInput(exampleDTO.getExampleInput());
+            example.setExampleOutput(exampleDTO.getExampleOutput());
+            example.setProblemId(id.intValue());
+            exampleService.createExample(example);
+        }
 
         return problemRepository.save(problem);
     }

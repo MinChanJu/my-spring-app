@@ -75,9 +75,15 @@ public class ProblemController {
         }
     }
 
+    @PostMapping("/examples/{id}")
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public List<Example> getProblemExamples(@PathVariable Long id) {
+        return exampleService.getExamplesByProblemId(id.intValue());
+    }
+
     @PutMapping("/{id}")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ResponseEntity<Problem> updateProblem(@PathVariable Long id, @RequestBody Problem problemDetails) {
+    public ResponseEntity<Problem> updateProblem(@PathVariable Long id, @RequestBody ProblemDTO problemDetails) {
         return ResponseEntity.ok(problemService.updateProblem(id, problemDetails));
     }
 

@@ -40,17 +40,18 @@ public class ContestService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Contest updateContest(Long id, Contest contestDetails) {
-        Contest contest = contestRepository.findById(id).orElseThrow(() -> new RuntimeException("Problem not found"));
+        Contest contest = contestRepository.findById(id).orElseThrow(() -> new RuntimeException("Contest not found"));
 
         contest.setContestName(contestDetails.getContestName());
         contest.setContestDescription(contestDetails.getContestDescription());
+        contest.setContestPw(contestDetails.getContestPw());
 
         return contestRepository.save(contest);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteContest(Long id) {
-        Contest contest = contestRepository.findById(id).orElseThrow(() -> new RuntimeException("Problem not found"));
+        Contest contest = contestRepository.findById(id).orElseThrow(() -> new RuntimeException("Contest not found"));
         contestRepository.delete(contest);
         List<Problem> problems = problemRepository.findByContestId(id.intValue());
         for (Problem problem : problems) {

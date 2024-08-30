@@ -85,6 +85,7 @@ public class CodeController {
         }
     }
 
+    // javaCompile
     public String javaCompile(String code, String exampleInput, String exampleOutput) throws Exception {
         String result;
         String[] expectedOutput = exampleOutput.split("\n");
