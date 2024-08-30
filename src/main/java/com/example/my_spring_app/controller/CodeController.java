@@ -17,6 +17,10 @@ import java.util.Optional;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -58,12 +62,10 @@ public class CodeController {
             try {
                 result = JavaCompile(code, problem.getProblemExampleInput(), problem.getProblemExampleOutput());
                 re += result;
-                if (result.equals("성공")) {
+                if (result.equals("success")) {
                     count++;
-                } else if (result.equals("컴파일 실패")) {
-                    return "컴파일 오류";
-                } else if (result.equals("시간초과")) {
-                    return "시간초과";
+                } else if (!result.equals("fail")) {
+                    return result;
                 }
             } catch (Exception e) {
                 e.printStackTrace(); // 예외 발생 시 스택 트레이스를 출력하여 문제를 진단
@@ -73,12 +75,10 @@ public class CodeController {
                 try {
                     result = JavaCompile(code, example.getExampleInput(), example.getExampleOutput());
                     re += result;
-                    if (result.equals("성공")) {
+                    if (result.equals("success")) {
                         count++;
-                    } else if (result.equals("컴파일 실패")) {
-                        return "컴파일 오류";
-                    } else if (result.equals("시간초과")) {
-                        return "시간초과";
+                    } else if (!result.equals("fail")) {
+                        return result;
                     }
                 } catch (Exception e) {
                     e.printStackTrace(); // 예외 발생 시 스택 트레이스를 출력하여 문제를 진단
@@ -93,97 +93,72 @@ public class CodeController {
 
     public String JavaCompile(String code, String exampleInput, String exampleOutput) throws Exception {
         String result;
-        String[] list = exampleOutput.split("\n");
+        String[] expectedOutput = exampleOutput.split("\n");
+        System.out.println(exampleInput);
+        System.out.println(exampleOutput);
 
-        // 서브디렉토리 경로 설정
-        String subdirectoryPath = "/app/data"; // 클라우드타입에서 사용할 서브디렉토리
-        File subdirectory = new File(subdirectoryPath);
-
-        // 서브디렉토리가 존재하지 않으면 생성
-        if (!subdirectory.exists()) {
-            boolean created = subdirectory.mkdirs();
-            if (created) {
-                System.out.println("서브디렉토리가 생성되었습니다: " + subdirectoryPath);
-            } else {
-                System.out.println("서브디렉토리 생성에 실패했습니다.");
-                return "서버 에러: 디렉토리 생성 실패";
-            }
-        }
-
-        // Java 파일을 서브디렉토리에 저장
-        File javaFile = new File(subdirectoryPath, "Main.java");
-        try (FileWriter fileWriter = new FileWriter(javaFile)) {
-            fileWriter.write(code);
+        // data 폴더에 있는 Main.java 파일의 경로를 지정합니다.
+        Path filePath = Paths.get("src/main/java/com/example/my_spring_app/data/Main.java");
+        try {
+            // 파일 내용을 완전히 지우고 새 내용으로 덮어씁니다.
+            Files.write(filePath, ("package com.example.my_spring_app.data;\n\n"+code).getBytes(), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+            System.out.println("file write success.");
+        } catch (IOException e) {
+            System.out.println("file write fail: " + e.getMessage());
+            return "파일 작성 오류";
         }
 
         // Java 컴파일러 API를 사용하여 컴파일
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         ByteArrayOutputStream errStream = new ByteArrayOutputStream();
-        int compile = compiler.run(null, null, new PrintStream(errStream), javaFile.getPath());
+        int compile = compiler.run(null, null, new PrintStream(errStream), filePath.toString());
 
         if (compile == 0) {
-            // 컴파일된 클래스를 실행
-            ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", subdirectoryPath, "Main");
-            Process process = processBuilder.start();
+            try {
+                // 컴파일된 클래스를 실행
+                ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", "src/main/java", "com.example.my_spring_app.data.Main");
+                Process process = processBuilder.start();
 
-            // 프로세스에 입력 값 전달
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()))) {
+                // 프로세스에 입력 값 전달
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
                 writer.write(exampleInput + "\n");
                 writer.flush();
-            }
 
-            // 프로세스의 출력을 읽어오기
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            int i = 0;
-            String line;
-            boolean matches = true;
+                // 프로세스의 출력을 읽어오기
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                int i = 0;
+                String line;
+                boolean matches = true;
 
-            // 시간 제한 설정 (5초)
-            long timeout = 5;
-            if (!process.waitFor(timeout, TimeUnit.SECONDS)) {
-                result = "시간초과";
-                process.destroy(); // 프로세스 강제 종료
-            } else {
-                // 정상적으로 종료된 경우에만 결과를 확인
-                while ((line = reader.readLine()) != null && i < list.length) {
-                    if (!line.equals(list[i])) {
-                        matches = false;
-                        break;
+                // 시간 제한 설정 (5초)
+                long timeout = 5;
+                if (!process.waitFor(timeout, TimeUnit.SECONDS)) {
+                    result = "time out";
+                    process.destroy(); // 프로세스 강제 종료
+                } else {
+                    // 정상적으로 종료된 경우에만 결과를 확인
+                    while ((line = reader.readLine()) != null && i < expectedOutput.length) {
+                        if (!line.equals(expectedOutput[i])) {
+                            matches = false;
+                            break;
+                        }
+                        i++;
                     }
-                    i++;
-                }
 
-                if (matches && i == list.length) {
-                    result = "성공";
-                } else {
-                    result = "실패";
+                    if (matches && i == expectedOutput.length) {
+                        result = "success";
+                    } else {
+                        result = "fail";
+                    }
                 }
-            }
-
-            // 컴파일된 클래스 파일 삭제
-            File classFile = new File(subdirectoryPath + File.separator + "Main.class");
-            if (classFile.exists()) {
-                if (classFile.delete()) {
-                    System.out.println("컴파일된 클래스 파일 삭제 성공!");
-                } else {
-                    System.out.println("컴파일된 클래스 파일 삭제 실패.");
-                }
+            } catch (IOException | InterruptedException e) {
+                result = "process run fail: " + e.getMessage();
             }
 
         } else {
-            result = "컴파일 실패: " + errStream.toString();
+            result = "compile fail: " + errStream.toString();
         }
 
-        // 원본 Java 파일 삭제
-        if (javaFile.exists()) {
-            if (javaFile.delete()) {
-                System.out.println("원본 Java 파일 삭제 성공!");
-            } else {
-                System.out.println("원본 Java 파일 삭제 실패.");
-            }
-        }
-
-        System.out.println(result);
         return result;
     }
 }
