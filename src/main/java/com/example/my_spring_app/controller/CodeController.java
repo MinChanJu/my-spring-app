@@ -79,11 +79,9 @@ public class CodeController {
             }
             return String.format("%.1f", ((double) count / (double) total) * 100);
         } else if (lang.equals("C")) {
-            String re = "";
             String result;
             try {
                 result = ClanguageCompile(code, problem.getProblemExampleInput(), problem.getProblemExampleOutput());
-                re += result;
                 if (result.equals("success")) {
                     count++;
                 } else if (result.equals("process run fail: Timeout")) {
@@ -98,7 +96,6 @@ public class CodeController {
             for (Example example : examples) {
                 try {
                     result = ClanguageCompile(code, example.getExampleInput(), example.getExampleOutput());
-                    re += result;
                     if (result.equals("success")) {
                         count++;
                     } else if (result.equals("process run fail: Timeout")) {
@@ -111,7 +108,7 @@ public class CodeController {
                     return "서버 에러: " + e.getMessage();
                 }
             }
-            return String.format("%.1f", ((double) count / (double) total) * 100) + re;
+            return String.format("%.1f", ((double) count / (double) total) * 100);
         } else if (lang.equals("JAVA")) {
             String result;
             try {
@@ -455,14 +452,11 @@ public class CodeController {
             // 5초 시간 제한 설정
             String output = future.get(5, TimeUnit.SECONDS);
             String[] actualOutput = output.split("\n");
-            System.out.println("------------------------");
-            System.out.println(output);
 
             // 출력 결과를 비교
             boolean matches = true;
             int i = 0;
             while (i < actualOutput.length && i < expectedOutput.length) {
-                System.out.println(actualOutput[i]);
                 if (!actualOutput[i].trim().equals(expectedOutput[i].trim())) {
                     matches = false;
                     break;
