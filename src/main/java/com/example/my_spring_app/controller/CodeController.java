@@ -456,13 +456,13 @@ public class CodeController {
             String output = future.get(5, TimeUnit.SECONDS);
             String[] actualOutput = output.split("\n");
             System.out.println("------------------------");
-            System.out.println(actualOutput);
+            System.out.println(output);
 
             // 출력 결과를 비교
             boolean matches = true;
             int i = 0;
             while (i < actualOutput.length && i < expectedOutput.length) {
-                System.out.println(actualOutput[i].trim());
+                System.out.println(actualOutput[i]);
                 if (!actualOutput[i].trim().equals(expectedOutput[i].trim())) {
                     matches = false;
                     break;
