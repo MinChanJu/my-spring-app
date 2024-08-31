@@ -7,6 +7,9 @@ ENV SPRING_PROFILES_ACTIVE=prod
 # 필요한 패키지 목록 업데이트 및 gcc 설치
 RUN apt-get update && apt-get install -y gcc make build-essential && rm -rf /var/lib/apt/lists/*
 
+# 필요한 패키지 목록을 업데이트하고 Python 설치
+RUN apt-get update && apt-get install -y python3 python3-pip && rm -rf /var/lib/apt/lists/*
+
 # 애플리케이션 JAR 파일을 컨테이너로 복사
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
