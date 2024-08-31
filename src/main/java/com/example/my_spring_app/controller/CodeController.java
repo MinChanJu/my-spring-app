@@ -302,7 +302,7 @@ public class CodeController {
         String[] expectedOutput = exampleOutput.split("\n");
 
         // Python 실행 명령어와 파라미터 준비
-        ProcessBuilder processBuilder = new ProcessBuilder("python", "-c", code);
+        ProcessBuilder processBuilder = new ProcessBuilder("python3", "-c", code);
         processBuilder.redirectErrorStream(true);  // 표준 에러를 표준 출력으로 병합
 
         // 프로세스를 실행할 ExecutorService와 시간 제한 설정 (예: 5초)
