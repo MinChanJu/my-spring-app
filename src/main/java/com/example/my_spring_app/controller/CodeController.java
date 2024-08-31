@@ -15,6 +15,7 @@ import javax.tools.*;
 import java.io.*;
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.*;
 import java.lang.reflect.Method;
 
 @RestController
@@ -47,15 +48,78 @@ public class CodeController {
         int count = 0;
 
         if (lang.equals("Python")) {
-            return "Python 제출";
+            String result;
+            try {
+                result = pythonCompile(code, problem.getProblemExampleInput(), problem.getProblemExampleOutput());
+                if (result.equals("success")) {
+                    count++;
+                } else if (result.equals("process run fail: Timeout")) {
+                    return "시간초과";
+                } else if (!result.equals("fail")) {
+                    return result;
+                }
+            } catch (Exception e) {
+                e.printStackTrace(); // 예외 발생 시 스택 트레이스를 출력하여 문제를 진단
+                return "서버 에러: " + e.getMessage();
+            }
+            for (Example example : examples) {
+                try {
+                    result = pythonCompile(code, example.getExampleInput(), example.getExampleOutput());
+                    if (result.equals("success")) {
+                        count++;
+                    } else if (result.equals("process run fail: Timeout")) {
+                        return "시간초과";
+                    } else if (!result.equals("fail")) {
+                        return result;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace(); // 예외 발생 시 스택 트레이스를 출력하여 문제를 진단
+                    return "서버 에러: " + e.getMessage();
+                }
+            }
+            return String.format("%.1f", ((double) count / (double) total) * 100);
         } else if (lang.equals("C")) {
-            return "C 언어 제출";
+            String re = "";
+            String result;
+            try {
+                result = ClanguageCompile(code, problem.getProblemExampleInput(), problem.getProblemExampleOutput());
+                re += result;
+                if (result.equals("success")) {
+                    count++;
+                } else if (result.equals("process run fail: Timeout")) {
+                    return "시간초과";
+                } else if (!result.equals("fail")) {
+                    return result;
+                }
+            } catch (Exception e) {
+                e.printStackTrace(); // 예외 발생 시 스택 트레이스를 출력하여 문제를 진단
+                return "서버 에러: " + e.getMessage();
+            }
+            for (Example example : examples) {
+                try {
+                    result = ClanguageCompile(code, example.getExampleInput(), example.getExampleOutput());
+                    re += result;
+                    if (result.equals("success")) {
+                        count++;
+                    } else if (result.equals("process run fail: Timeout")) {
+                        return "시간초과";
+                    } else if (!result.equals("fail")) {
+                        return result;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace(); // 예외 발생 시 스택 트레이스를 출력하여 문제를 진단
+                    return "서버 에러: " + e.getMessage();
+                }
+            }
+            return String.format("%.1f", ((double) count / (double) total) * 100) + re;
         } else if (lang.equals("JAVA")) {
             String result;
             try {
                 result = javaCompile(code, problem.getProblemExampleInput(), problem.getProblemExampleOutput());
                 if (result.equals("success")) {
                     count++;
+                } else if (result.equals("process run fail: Timeout")) {
+                    return "시간초과";
                 } else if (!result.equals("fail")) {
                     return result;
                 }
@@ -68,6 +132,8 @@ public class CodeController {
                     result = javaCompile(code, example.getExampleInput(), example.getExampleOutput());
                     if (result.equals("success")) {
                         count++;
+                    } else if (result.equals("process run fail: Timeout")) {
+                        return "시간초과";
                     } else if (!result.equals("fail")) {
                         return result;
                     }
@@ -118,34 +184,46 @@ public class CodeController {
         boolean success = task.call();
 
         if (success) {
+            ExecutorService executor = Executors.newSingleThreadExecutor();  // 스레드 풀 생성
+            Future<String> future = executor.submit(() -> {
+                try {
+                    // 컴파일된 클래스를 로드하고 실행
+                    InMemoryClassLoader classLoader = new InMemoryClassLoader(classFiles);
+                    Class<?> cls = classLoader.loadClass("Main");
+                    Method mainMethod = cls.getDeclaredMethod("main", String[].class);
+
+                    // 실행 결과를 캡처하기 위해 PrintStream을 사용
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    PrintStream ps = new PrintStream(outputStream);
+                    PrintStream oldOut = System.out;
+                    System.setOut(ps);
+
+                    // System.in을 가짜 InputStream으로 설정하여 Scanner 입력 시뮬레이션
+                    InputStream oldIn = System.in;
+                    InputStream inputStream = new ByteArrayInputStream(exampleInput.getBytes());
+                    System.setIn(inputStream);
+
+                    // 메인 메서드 실행
+                    mainMethod.invoke(null, (Object) new String[]{});
+
+                    // 실행 후 원래 System.in 및 System.out 복구
+                    System.setOut(oldOut);
+                    System.setIn(oldIn);
+
+                    // 출력 결과를 반환
+                    return outputStream.toString().trim();
+
+                } catch (Exception e) {
+                    return "process run fail: " + e.getMessage();
+                }
+            });
+
             try {
-                // 컴파일된 클래스를 로드하고 실행
-                InMemoryClassLoader classLoader = new InMemoryClassLoader(classFiles);
-                Class<?> cls = classLoader.loadClass("Main");
-                Method mainMethod = cls.getDeclaredMethod("main", String[].class);
-
-                // 실행 결과를 캡처하기 위해 PrintStream을 사용
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                PrintStream ps = new PrintStream(outputStream);
-                PrintStream oldOut = System.out;
-                System.setOut(ps);
-
-                // System.in을 가짜 InputStream으로 설정하여 Scanner 입력 시뮬레이션
-                InputStream oldIn = System.in;
-                InputStream inputStream = new ByteArrayInputStream(exampleInput.getBytes());
-                System.setIn(inputStream);
-
-                // 메인 메서드 실행
-                mainMethod.invoke(null, (Object) new String[]{});
-
-                // 실행 후 원래 System.in 및 System.out 복구
-                System.setOut(oldOut);
-                System.setIn(oldIn);
-
-                // 출력 결과를 비교
-                String output = outputStream.toString().trim();
+                // 5초 시간 제한 설정
+                String output = future.get(5, TimeUnit.SECONDS);
                 String[] actualOutput = output.split("\n");
 
+                // 출력 결과를 비교
                 boolean matches = true;
                 int i = 0;
                 while (i < actualOutput.length && i < expectedOutput.length) {
@@ -161,8 +239,16 @@ public class CodeController {
                 } else {
                     result = "fail";
                 }
-            } catch (Exception e) {
-                result = "process run fail: " + e.getMessage();
+
+            } catch (TimeoutException e) {
+                future.cancel(true);  // 시간 초과 시 실행 중인 프로세스를 중지
+                result = "process run fail: Timeout";
+            } catch (ExecutionException e) {
+                result = "process run fail: " + e.getCause().getMessage();
+            } catch (InterruptedException e) {
+                result = "process interrupted: " + e.getMessage();
+            } finally {
+                executor.shutdown();  // ExecutorService 종료
             }
         } else {
             // 컴파일 오류 수집
@@ -208,5 +294,190 @@ public class CodeController {
             byte[] bytes = baos.toByteArray();
             return defineClass(name, bytes, 0, bytes.length);
         }
+    }
+
+    // pythonCompile
+    public String pythonCompile(String code, String exampleInput, String exampleOutput) throws Exception {
+        StringBuilder result = new StringBuilder();
+        String[] expectedOutput = exampleOutput.split("\n");
+
+        // Python 실행 명령어와 파라미터 준비
+        ProcessBuilder processBuilder = new ProcessBuilder("python", "-c", code);
+        processBuilder.redirectErrorStream(true);  // 표준 에러를 표준 출력으로 병합
+
+        // 프로세스를 실행할 ExecutorService와 시간 제한 설정 (예: 5초)
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<String> future = executor.submit(() -> {
+            try {
+                Process process = processBuilder.start();
+
+                // Python 코드에 입력 값을 전달
+                try (OutputStream stdin = process.getOutputStream()) {
+                    stdin.write(exampleInput.getBytes());
+                    stdin.flush();
+                }
+
+                // Python 코드 실행 결과 읽기
+                StringBuilder output = new StringBuilder();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        output.append(line).append("\n");
+                    }
+                }
+
+                int exitCode = process.waitFor();
+                if (exitCode != 0) {
+                    throw new Exception("Python script execution failed with exit code: " + exitCode);
+                }
+
+                return output.toString().trim();
+            } catch (IOException | InterruptedException e) {
+                throw new Exception("Error occurred during Python script execution: " + e.getMessage());
+            }
+        });
+
+        String output;
+        try {
+            // 지정된 시간(5초) 내에 작업이 완료되지 않으면 TimeoutException 발생
+            output = future.get(5, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            future.cancel(true);  // 시간 초과 시 프로세스 중지
+            result.append("process run fail: Timeout");
+            return result.toString();
+        } catch (ExecutionException e) {
+            result.append("process run fail: ").append(e.getCause().getMessage());
+            return result.toString();
+        } catch (InterruptedException e) {
+            result.append("process interrupted: ").append(e.getMessage());
+            return result.toString();
+        } finally {
+            executor.shutdown();
+        }
+
+        // 출력 결과를 비교
+        String[] actualOutput = output.split("\n");
+
+        boolean matches = true;
+        int i = 0;
+        while (i < actualOutput.length && i < expectedOutput.length) {
+            if (!actualOutput[i].trim().equals(expectedOutput[i].trim())) {
+                matches = false;
+                break;
+            }
+            i++;
+        }
+
+        if (matches && i == expectedOutput.length) {
+            result.append("success");
+        } else {
+            result.append("fail");
+        }
+
+        return result.toString();
+    }
+
+    // ClanguageCompile
+    public String ClanguageCompile(String code, String exampleInput, String exampleOutput) throws Exception {
+        String result;
+        String[] expectedOutput = exampleOutput.split("\n");
+
+        // ExecutorService를 사용하여 별도 스레드에서 컴파일 및 실행
+        ExecutorService executor = Executors.newSingleThreadExecutor();  
+        Future<String> future = executor.submit(() -> {
+            try {
+                // `gcc`를 사용하여 표준 입력으로부터 컴파일
+                ProcessBuilder compileProcessBuilder = new ProcessBuilder("gcc", "-x", "c", "-", "-o", "/dev/stdout");  // 컴파일된 바이너리를 표준 출력으로 보냄 (Linux/Mac)
+                compileProcessBuilder.redirectErrorStream(true);
+                Process compileProcess = compileProcessBuilder.start();
+
+                // C 코드 표준 입력으로 전달
+                try (OutputStream stdin = compileProcess.getOutputStream()) {
+                    stdin.write(code.getBytes());
+                    stdin.flush();
+                }
+
+                // 컴파일 결과 읽기
+                ByteArrayOutputStream compileOutput = new ByteArrayOutputStream();
+                try (InputStream is = compileProcess.getInputStream()) {
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = is.read(buffer)) != -1) {
+                        compileOutput.write(buffer, 0, length);
+                    }
+                }
+
+                int compileExitCode = compileProcess.waitFor();
+                if (compileExitCode != 0) {
+                    throw new Exception("Compilation failed: " + compileOutput.toString());
+                }
+
+                // 컴파일된 바이너리를 실행하기 위해 프로세스 생성
+                ProcessBuilder runProcessBuilder = new ProcessBuilder("/bin/bash", "-c", compileOutput.toString());
+                runProcessBuilder.redirectErrorStream(true);
+                Process runProcess = runProcessBuilder.start();
+
+                // 실행 중 입력값 전달
+                try (OutputStream stdin = runProcess.getOutputStream()) {
+                    stdin.write(exampleInput.getBytes());
+                    stdin.flush();
+                }
+
+                // 실행 결과 읽기
+                StringBuilder output = new StringBuilder();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(runProcess.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        output.append(line).append("\n");
+                    }
+                }
+
+                int runExitCode = runProcess.waitFor();
+                if (runExitCode != 0) {
+                    throw new Exception("Execution failed with exit code: " + runExitCode);
+                }
+
+                return output.toString().trim();
+
+            } catch (Exception e) {
+                return "process run fail: " + e.getMessage();
+            }
+        });
+
+        try {
+            // 5초 시간 제한 설정
+            String output = future.get(5, TimeUnit.SECONDS);
+            String[] actualOutput = output.split("\n");
+
+            // 출력 결과를 비교
+            boolean matches = true;
+            int i = 0;
+            while (i < actualOutput.length && i < expectedOutput.length) {
+                System.out.println(actualOutput[i].trim());
+                if (!actualOutput[i].trim().equals(expectedOutput[i].trim())) {
+                    matches = false;
+                    break;
+                }
+                i++;
+            }
+
+            if (matches && i == expectedOutput.length) {
+                result = "success";
+            } else {
+                result = "fail";
+            }
+
+        } catch (TimeoutException e) {
+            future.cancel(true);  // 시간 초과 시 실행 중인 프로세스를 중지
+            result = "process run fail: Timeout";
+        } catch (ExecutionException e) {
+            result = "process run fail: " + e.getCause().getMessage();
+        } catch (InterruptedException e) {
+            result = "process interrupted: " + e.getMessage();
+        } finally {
+            executor.shutdown();  // ExecutorService 종료
+        }
+
+        return result;
     }
 }
