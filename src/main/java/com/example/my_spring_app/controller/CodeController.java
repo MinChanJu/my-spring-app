@@ -51,11 +51,9 @@ public class CodeController {
         } else if (lang.equals("C")) {
             return "C 언어 제출";
         } else if (lang.equals("JAVA")) {
-            String re = "";
             String result;
             try {
                 result = javaCompile(code, problem.getProblemExampleInput(), problem.getProblemExampleOutput());
-                re += result;
                 if (result.equals("success")) {
                     count++;
                 } else if (!result.equals("fail")) {
@@ -68,7 +66,6 @@ public class CodeController {
             for (Example example : examples) {
                 try {
                     result = javaCompile(code, example.getExampleInput(), example.getExampleOutput());
-                    re += result;
                     if (result.equals("success")) {
                         count++;
                     } else if (!result.equals("fail")) {
@@ -79,7 +76,7 @@ public class CodeController {
                     return "서버 에러: " + e.getMessage();
                 }
             }
-            return String.format("%.1f", ((double) count / (double) total) * 100) + "  " + re;
+            return String.format("%.1f", ((double) count / (double) total) * 100);
         } else {
             return "제출 오류";
         }
