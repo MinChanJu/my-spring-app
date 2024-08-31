@@ -455,6 +455,8 @@ public class CodeController {
             // 5초 시간 제한 설정
             String output = future.get(5, TimeUnit.SECONDS);
             String[] actualOutput = output.split("\n");
+            System.out.println("------------------------");
+            System.out.println(actualOutput);
 
             // 출력 결과를 비교
             boolean matches = true;
