@@ -382,28 +382,31 @@ public class CodeController {
         String result;
         String[] expectedOutput = exampleOutput.split("\n");
 
+        // 쓰기 권한이 있는 디렉토리 (예: /tmp) 설정
+        String tempDir = "/tmp";
+        String sourceFilePath = tempDir + "/temp_program.c";
+        String executableFilePath = tempDir + "/temp_program";
+
         // ExecutorService를 사용하여 별도 스레드에서 컴파일 및 실행
-        ExecutorService executor = Executors.newSingleThreadExecutor();  
+        ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<String> future = executor.submit(() -> {
             try {
-                // `gcc`를 사용하여 표준 입력으로부터 컴파일
-                ProcessBuilder compileProcessBuilder = new ProcessBuilder("gcc", "-x", "c", "-", "-o", "/dev/stdout");  // 컴파일된 바이너리를 표준 출력으로 보냄 (Linux/Mac)
+                // 임시 C 소스 파일 생성
+                try (FileWriter writer = new FileWriter(sourceFilePath)) {
+                    writer.write(code);
+                }
+
+                // `gcc`를 사용하여 C 코드를 컴파일
+                ProcessBuilder compileProcessBuilder = new ProcessBuilder("gcc", sourceFilePath, "-o", executableFilePath);
                 compileProcessBuilder.redirectErrorStream(true);
                 Process compileProcess = compileProcessBuilder.start();
 
-                // C 코드 표준 입력으로 전달
-                try (OutputStream stdin = compileProcess.getOutputStream()) {
-                    stdin.write(code.getBytes());
-                    stdin.flush();
-                }
-
                 // 컴파일 결과 읽기
-                ByteArrayOutputStream compileOutput = new ByteArrayOutputStream();
-                try (InputStream is = compileProcess.getInputStream()) {
-                    byte[] buffer = new byte[1024];
-                    int length;
-                    while ((length = is.read(buffer)) != -1) {
-                        compileOutput.write(buffer, 0, length);
+                StringBuilder compileOutput = new StringBuilder();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(compileProcess.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        compileOutput.append(line).append("\n");
                     }
                 }
 
@@ -413,7 +416,7 @@ public class CodeController {
                 }
 
                 // 컴파일된 바이너리를 실행하기 위해 프로세스 생성
-                ProcessBuilder runProcessBuilder = new ProcessBuilder("/bin/bash", "-c", compileOutput.toString());
+                ProcessBuilder runProcessBuilder = new ProcessBuilder(executableFilePath);
                 runProcessBuilder.redirectErrorStream(true);
                 Process runProcess = runProcessBuilder.start();
 
@@ -441,6 +444,10 @@ public class CodeController {
 
             } catch (Exception e) {
                 return "process run fail: " + e.getMessage();
+            } finally {
+                // 임시 파일 삭제
+                new File(sourceFilePath).delete();
+                new File(executableFilePath).delete();
             }
         });
 
